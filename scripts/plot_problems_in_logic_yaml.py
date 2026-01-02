@@ -133,7 +133,7 @@ def main():
 
     problem_sizes: Set[Tuple[int, int, int, int]] = set()
 
-    logic_yaml_path_sp = Path("/src/workspace/rocm-libraries/projects/hipblaslt/library/src/amd_detail/rocblaslt/src/Tensile/Logic/asm_full/gfx1201/GridBased/gfx1201_Cijk_Ailk_Bljk_F8F8S_BH_Bias_SHB_HA_S_SAB_SCD_SAV_UserArgs.yaml")
+    logic_yaml_path_sp = Path("/src/rocm-libraries/projects/hipblaslt/library/src/amd_detail/rocblaslt/src/Tensile/Logic/asm_full/gfx1201/GridBased/gfx1201_Cijk_Alik_Bljk_F8F8S_BH_Bias_SHB_HA_S_SAB_SCD_SAV_UserArgs.yaml")
 
     for logic_yaml_path in tqdm(logic_yaml_paths):
         if logic_yaml_path == logic_yaml_path_sp:

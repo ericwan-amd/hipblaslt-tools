@@ -4,8 +4,9 @@ import argparse
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Tuple
 from itertools import product
+from problem_size_navi4x_gridbased import *
 
 def load_yaml(path: str) -> Any:
     yaml = YAML()
@@ -99,15 +100,32 @@ def generate_points(spec):
 
     return [list(p) for p in product(*expanded_dims)]
 
+def estiablish_unique_problem_size_table():
+    table: set[Tuple[int, int, int, int]] = set()
+    pt_range_ls = [exact_pts, range_pts_edge,
+                   range_pts_basic_p1,
+                   range_pts_basic_p2_1, range_pts_basic_p2_2, range_pts_basic_p2_3, range_pts_basic_p2_4,
+                   range_pts_enlarge_p1, range_pts_enlarge_p2]
+    for pr_ls in pt_range_ls:
+        for pr in pr_ls:
+            for p in generate_points(pr):
+                table.add(tuple(p))
+    return table
+
 def create_problems() -> List[List[int]]:
-    range_pts_llama_deepseek = \
+    range_pts_target = \
                 [
                     [[64, 1024, 23552], [64, 1024, 23552], [1], [28672]]
                 ]
 
     pts = []
-    for pt_range in range_pts_llama_deepseek:
-        pts += generate_points(pt_range)
+    problem_size_table = estiablish_unique_problem_size_table()
+    for pt_range in range_pts_target:
+        for p in generate_points(pt_range):
+            if tuple(p) in problem_size_table:
+                continue
+            pts.append(p)
+            problem_size_table.add(tuple(p))
 
     MT0 = 256
     MT1 = 256
@@ -116,6 +134,7 @@ def create_problems() -> List[List[int]]:
     threshold_problem_size = MT0 * MT1 * CU_COUNT * Heuristic_times
     filtered_pts = [pt for pt in pts if pt[0] * pt[1] <= MT0 * MT1 * CU_COUNT * Heuristic_times]
     print(f"Generate {len(filtered_pts)} problems")
+    print(f"Table {len(problem_size_table)} problems")
     return filtered_pts
     
 def main():

@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from itertools import product
+from problem_size_navi4x_gridbased import *
+
 
 def generate_points(spec):
     """
@@ -56,106 +58,45 @@ def plot_points(points, save_path):
     print(f"Saved plot to {save_path}")
     plt.close()
 
+def add_unique_problem_size_to_table(pt_range_ls, unique_pts, problem_size_table):
+    for pr in pt_range_ls:
+        for p in generate_points(pr):
+            if tuple(p) in problem_size_table:
+                continue
+            unique_pts.append(p)
+            problem_size_table.add(tuple(p))
+
 def main():
-    exact_pts = [
-                 [64, 64, 1, 64], # tune 1.1
-                 [256, 256, 1, 256],
-                 [512, 512, 1, 512],
-                 [1024, 1024, 1, 1024],
-                 [2048, 2048, 1, 2048],
-                 [3072, 3072, 1, 3072],
-                 [4096, 4096, 1, 4096]
-                ]
-    range_pts = [
-                 [[64,64,1024],[64,64,1024],[1],[64]], # tune 1.2
-                 [[64,64,1024],[64,64,1024],[1],[256]],
-                 [[64,64,1024],[64,64,1024],[1],[512]],
-                 [[64,64,1024],[64,64,1024],[1],[1024]],
-                 [[64,64,1024],[64,64,1024],[1],[2048]],
-                 [[64,64,1024],[64,64,1024],[1],[4096]],        
-                 [[64,128,2048],[64,128,2048],[1],[64]],  # tune 1.3
-                 [[64,128,2048],[64,128,2048],[1],[256]],
-                 [[64,128,2048],[64,128,2048],[1],[512]],
-                 [[64,128,2048],[64,128,2048],[1],[1024]],
-                 [[64,128,2048],[64,128,2048],[1],[2048]],
-                 [[64,128,2048],[64,128,2048],[1],[4096]],
-                 [[64,256,4096],[64,256,4096],[1],[64]],
-                 [[64,256,4096],[64,256,4096],[1],[256]],
-                 [[64,256,4096],[64,256,4096],[1],[512]],
-                 [[64,256,4096],[64,256,4096],[1],[1024]],
-                 [[64,256,4096],[64,256,4096],[1],[2048]],
-                 [[64,256,4096],[64,256,4096],[1],[4096]],
-                 [[1024,64,2048],[1024,64,2048],[1],[64]],
-                 [[1024,64,2048],[1024,64,2048],[1],[256]],
-                 [[1024,64,2048],[1024,64,2048],[1],[1024]],
-                 [[1024,64,2048],[1024,64,2048],[1],[4096]],
-                 [[4096],[64,256,4096],[1],[64]],
-                 [[4096], [64,256,4096],[1],[256]],
-                 [[4096], [64,256,4096],[1],[512]],
-                 [[4096], [64,256,4096],[1],[1024]],
-                 [[4096], [64,256,4096],[1],[2048]],
-                 [[4096], [64,256,4096],[1],[4096]],
-                 [[64,256,4096],[4096],[1],[64]],
-                 [[64,256,4096], [4096],[1],[256]],
-                 [[64,256,4096], [4096],[1],[512]],
-                 [[64,256,4096], [4096],[1],[1024]],
-                 [[64,256,4096], [4096],[1],[2048]],
-                 [[64,256,4096], [4096],[1],[4096]]
-                 ]
-
-    range_pts_edge = \
-                [[[1],[1],[1],[1]]]
-                #  [[2,2,16],[2,2,16],[1],[2,2,16]],
-                #  [[2,2,16],[2,2,16],[1],[1024,1024,4160]]]
-
-    range_pts_llama_deepseek = \
-                [
-                #  [[64, 512, 9216], [64, 512, 9216], [1], [512]],
-                #  [[64, 512, 8192], [64, 512, 8192], [1], [2048]],
-                #  [[64, 512, 8192], [64, 512, 8192], [1], [8192]],
-                #  [[64, 512, 8192], [64, 512, 8192], [1], [16384]],
-                #  [[64, 512, 8192], [64, 512, 8192], [1], [28672]],
-
-                 [[64, 512, 9216], [64, 512, 9216], [1], [512]],
-
-                #  [[64, 1024, 16384], [64, 1024, 16384], [1], [512]],
-                #  [[64, 1024, 16384], [64, 1024, 16384], [1], [2048]],
-                #  [[64, 1024, 16384], [64, 1024, 16384], [1], [8192]],
-                #  [[64, 1024, 16384], [64, 1024, 16384], [1], [16384]],
-                #  [[64, 1024, 16384], [64, 1024, 16384], [1], [28672]],
-
-                #  [[64, 1024, 23552], [64, 1024, 23552], [1], [512]],
-                #  [[64, 1024, 23552], [64, 1024, 23552], [1], [2048]],
-                #  [[64, 1024, 23552], [64, 1024, 23552], [1], [8192]],
-                #  [[64, 1024, 23552], [64, 1024, 23552], [1], [16384]],
-                #  [[64, 1024, 23552], [64, 1024, 23552], [1], [28672]],
-
-                ]
-
     # Example exact point
     all_pts = []
-    for pt in exact_pts:
-        all_pts += generate_points(pt)
+    problem_size_table: set[Tuple[int, int, int, int]] = set()
 
-    for pt_range in range_pts:
-        all_pts += generate_points(pt_range)
+    add_unique_problem_size_to_table(range_pts_basic_p1, all_pts, problem_size_table)
 
-    for pt_range in range_pts_edge:
-        all_pts += generate_points(pt_range)
+    add_unique_problem_size_to_table(range_pts_basic_p2_1, all_pts, problem_size_table)
 
-    for pt_range in range_pts_llama_deepseek:
-        all_pts += generate_points(pt_range)
-    
+    add_unique_problem_size_to_table(range_pts_basic_p2_2, all_pts, problem_size_table)
+
+    add_unique_problem_size_to_table(range_pts_basic_p2_3, all_pts, problem_size_table)
+
+    add_unique_problem_size_to_table(range_pts_basic_p2_4, all_pts, problem_size_table)
+
+    add_unique_problem_size_to_table(range_pts_enlarge_p1, all_pts, problem_size_table)
+
+    add_unique_problem_size_to_table(range_pts_enlarge_p2, all_pts, problem_size_table)
+
+    add_unique_problem_size_to_table(range_pts_enlarge_p3, all_pts, problem_size_table)
+
     MT0 = 256
     MT1 = 256
     CU_COUNT = 64
     Heuristic_times = 12
     threshold_problem_size = MT0 * MT1 * CU_COUNT * Heuristic_times
-    print(threshold_problem_size)
     filtered_pts = [pt for pt in all_pts if pt[0] * pt[1] <= MT0 * MT1 * CU_COUNT * Heuristic_times]
 
-    print(f"Number of points: {len(filtered_pts)}")
-    plot_points(filtered_pts, "../test_data/f8_points_dense.jpg")
+    print(f"Number of unique points: {len(problem_size_table)}")
+    print(f"Number of filtered_pts points: {len(filtered_pts)}")
+    plot_points(filtered_pts, "../test_data/f8_points_enlarge_p3.jpg")
 
 if __name__ == "__main__":
     main()
